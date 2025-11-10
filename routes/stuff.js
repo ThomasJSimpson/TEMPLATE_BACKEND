@@ -26,10 +26,25 @@ router.delete("/:id", (req, res, next) => {
     .catch((error) => res.status(404).json({ error }));
 });
 
+// router.get("/:id", (req, res, next) => {
+//   Thing.findOne({ _id: req.params.id })
+//     .then((thing) => res.status(200).json(thing))
+//     .catch((error) => res.status(404).json({ error }));
+// });
 router.get("/:id", (req, res, next) => {
   Thing.findOne({ _id: req.params.id })
-    .then((thing) => res.status(200).json(thing))
-    .catch((error) => res.status(404).json({ error }));
+    .then((thing) => {
+      if (!thing) {
+        // Si aucun document trouvé → renvoyer 404
+        return res.status(404).json({ message: "Objet non trouvé !" });
+      }
+      // Sinon, tout va bien → renvoyer l’objet
+      res.status(200).json(thing);
+    })
+    .catch((error) => {
+      // Si erreur Mongo (id malformé, etc.)
+      res.status(400).json({ error });
+    });
 });
 
 router.get("/", (req, res, next) => {
